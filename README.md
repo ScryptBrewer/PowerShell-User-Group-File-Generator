@@ -1,7 +1,7 @@
 # AD & File Share Test Environment Generator
 
 ## tldr;
-This PowerShell script (`Create-TestEnvironment.ps1`) automates the creation and destruction of a complete Active Directory and file share testing environment. Use it to quickly spin up users, groups, folders, and large test files with specific permissions, and then tear it all down with a single command when you're done.
+This PowerShell script (`User-Group-File-Generator.ps1`) automates the creation and destruction of a complete Active Directory and file share testing environment. Use it to quickly spin up users, groups, folders, and large test files with specific permissions, and then tear it all down with a single command when you're done.
 
 ---
 
@@ -26,7 +26,7 @@ The script is controlled by parameters passed to it on the command line.
 This command creates an environment named `sssd_demo` with 1 user per role group and 25 files per folder.
 
 ```powershell
-.\Create-TestEnvironment.ps1
+.\User-Group-File-Generator.ps1
 ```
 
 #### 2. Create a Custom Environment
@@ -35,7 +35,7 @@ This command creates a more complex environment named projectx with 4 users per 
 powershell
 
 ```powershell
-.\Create-TestEnvironment.ps1 -ProjectPrefix "ProjectX" -UserCount 4 -FileCount 10 -UserPassword "MyP@ssw0rd!"
+.\User-Group-File-Generator.ps1 -ProjectPrefix "ProjectX" -UserCount 4 -FileCount 10 -UserPassword "MyP@ssw0rd!"
 ```
 
 #### 3. Clean Up an Environment
@@ -44,6 +44,6 @@ This command will find and delete the OU, users, groups, SMB share, and all fold
 powershell
 
 ```powershell
-.\Create-TestEnvironment.ps1 -ProjectPrefix "ProjectX" -Cleanup
+.\User-Group-File-Generator.ps1 -ProjectPrefix "ProjectX" -Cleanup
 ```
 
