@@ -198,7 +198,26 @@ Write-Host "[SUCCESS] Created Directory: $PublicSharePath" -ForegroundColor Gree
 
 # --- 6. Set NTFS Permissions ---
 Write-Host "`nSetting NTFS Permissions..." -ForegroundColor Cyan
+
+# NEW: Set Everyone Read permissions on the base project folder
+Write-Host "Setting Everyone Read permissions on base folder '$DemoRootPath'..." -ForegroundColor Cyan
+$BaseAcl = Get-Acl -Path $DemoRootPath
+# Create access rule for Everyone with Read permissions
+$EveryoneRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+    "Everyone",                              # Identity
+    "ReadAndExecute, Synchronize",          # FileSystemRights
+    "ContainerInherit, ObjectInherit",      # InheritanceFlags
+    "None",                                 # PropagationFlags
+    "Allow"                                 # AccessControlType
+)
+$BaseAcl.AddAccessRule($EveryoneRule)
+Set-Acl -Path $DemoRootPath -AclObject $BaseAcl
+Write-Host "[SUCCESS] Set Everyone Read permissions on '$DemoRootPath'" -ForegroundColor Green
+
+# Disable inheritance on subdirectories
 @( $CompanyDataPath, $PublicSharePath ) | ForEach-Object { $Acl = Get-Acl $_; $Acl.SetAccessRuleProtection($true, $false); Set-Acl -Path $_ -AclObject $Acl }
+
+# Set department-specific permissions
 foreach ($dept in $Departments.Keys) {
     $DeptPath = Join-Path $CompanyDataPath $dept
     $Acl = Get-Acl -Path $DeptPath
@@ -211,6 +230,8 @@ foreach ($dept in $Departments.Keys) {
     Set-Acl -Path $DeptPath -AclObject $Acl
     Write-Host "[SUCCESS] Set NTFS permissions for '$DeptPath'" -ForegroundColor Green
 }
+
+# Set permissions on PublicShare
 $Acl = Get-Acl -Path $PublicSharePath
 $Rule = New-Object System.Security.AccessControl.FileSystemAccessRule($AllUsersGroupName, "Modify, Synchronize", "ContainerInherit, ObjectInherit", "None", "Allow")
 $Acl.AddAccessRule($Rule)
